@@ -83,7 +83,7 @@ export async function chatCompletion({
       const errText = await res.text();
       // If 429 on current model, try instant fallback models
       if (res.status === 429) {
-        const fallbackModel = payload.model === "openai/gpt-oss-20b" ? "qwen/qwen3.6-27b" : "openai/gpt-oss-20b";
+        const fallbackModel = payload.model === "openai/gpt-oss-120b" ? "openai/gpt-oss-20b" : "openai/gpt-oss-120b";
         console.warn(`429 Rate limit on ${payload.model}. Falling back to ${fallbackModel}...`);
         payload.model = fallbackModel;
         const fbRes = await fetch(`${GROK_API_BASE}/chat/completions`, {

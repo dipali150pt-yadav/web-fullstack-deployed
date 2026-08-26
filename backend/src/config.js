@@ -41,11 +41,11 @@ export const GROK_API_BASE = (() => {
 // Models
 export const GROK_GENERATION_MODEL =
   process.env.GROK_GENERATION_MODEL ||
-  (GROK_API_KEY.startsWith("gsk_") ? "llama-3.3-70b-versatile" : "grok-2-latest");
+  (GROK_API_KEY.startsWith("gsk_") ? "openai/gpt-oss-120b" : "grok-2-latest");
 
 export const GROK_SEARCH_MODEL =
   process.env.GROK_SEARCH_MODEL ||
-  (GROK_API_KEY.startsWith("gsk_") ? "llama-3.3-70b-versatile" : "grok-2-latest");
+  (GROK_API_KEY.startsWith("gsk_") ? "openai/gpt-oss-120b" : "grok-2-latest");
 
 export const GROK_VISION_MODEL =
   process.env.GROK_VISION_MODEL ||
