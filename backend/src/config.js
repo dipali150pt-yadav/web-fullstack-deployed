@@ -21,7 +21,6 @@ export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 export const DATA_DIR = fs.existsSync(path.resolve(__dirname, "../data"))
   ? path.resolve(__dirname, "../data")
   : path.resolve(__dirname, "../../../data");
-export const DB_PATH = path.join(DATA_DIR, "assistant.db");
 export const INTERACTIONS_FILE = path.join(DATA_DIR, "interactions.jsonl");
 
 // API Keys
