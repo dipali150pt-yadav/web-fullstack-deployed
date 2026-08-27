@@ -51,7 +51,7 @@ export const GROK_VISION_MODEL =
   (GROK_API_KEY.startsWith("gsk_") ? "meta-llama/llama-4-scout-17b-16e-instruct" : "grok-2-vision-1212");
 
 // Thresholds
-export const MIN_DOCUMENT_SIMILARITY = parseFloat(process.env.MIN_DOCUMENT_SIMILARITY || "0.15");
+export const MIN_DOCUMENT_SIMILARITY = parseFloat(process.env.MIN_DOCUMENT_SIMILARITY || "0.08");
 export const MIN_FAQ_SIMILARITY = 0.25;
 export const MIN_MEMORY_SIMILARITY = 0.50;
 export const RETRIEVAL_TOP_K = parseInt(process.env.RETRIEVAL_TOP_K || "5", 10);

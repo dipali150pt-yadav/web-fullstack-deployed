@@ -97,10 +97,10 @@ export async function processChat({
       query: question,
       productId: effectiveProduct,
       hardwareVersion: effectiveVersion,
-      topK: 5,
+      topK: 8,
     });
 
-    if (docChunks.length > 0) {
+    if (docChunks.length > 0 && docChunks[0].score >= 0.12) {
       let rawAnswer = "";
 
       // Call Groq LLM API with retrieved context
@@ -124,7 +124,7 @@ GUIDELINES:
 4. If the question cannot be answered from the provided excerpts, reply strictly with: "This information is not available in the uploaded document."
 5. Keep points crisp, up-to-the-mark, and easy to read. Do NOT write long paragraphs.`;
 
-          const context = buildProductContext({ chunks: docChunks.slice(0, 4) });
+          const context = buildProductContext({ chunks: docChunks.slice(0, 6) });
           rawAnswer = await generateGroundedAnswer({
             systemInstruction: strictPrompt,
             context,
@@ -132,7 +132,6 @@ GUIDELINES:
           });
         } catch (err) {
           console.warn(`[ChatService] Grounded LLM error: ${err.message}`);
-          console.warn(`[ChatService] Full error:`, err);
         }
       }
 

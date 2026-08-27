@@ -292,7 +292,7 @@ export function chunkText(text, maxWords = 300, overlapWords = 50) {
 export function chunkAndIndexDocument(productId, filename, content, customHwVersion = "") {
   // Clean PDF publishing and layout artifacts
   const cleanContent = cleanDocumentText(content || "");
-  const subChunks = chunkText(cleanContent, 280, 40);
+  const subChunks = chunkText(cleanContent, 150, 50);
   let chunkIdx = 0;
 
   let docHwVersion = customHwVersion || "";
@@ -563,7 +563,7 @@ export function queryProductDocuments({ query, productId, hardwareVersion = "", 
       score = cosine;
     }
 
-    if (score >= 0.15) {
+    if (score >= 0.08) {
       candidateChunks.push({
         text: doc.text,
         metadata: doc.metadata,
