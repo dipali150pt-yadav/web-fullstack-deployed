@@ -100,7 +100,7 @@ export async function processChat({
       topK: 5,
     });
 
-    if (docChunks.length > 0 && docChunks[0].score >= 0.12) {
+    if (docChunks.length > 0) {
       let rawAnswer = "";
 
       // Call Groq LLM API with retrieved context
@@ -132,6 +132,7 @@ GUIDELINES:
           });
         } catch (err) {
           console.warn(`[ChatService] Grounded LLM error: ${err.message}`);
+          console.warn(`[ChatService] Full error:`, err);
         }
       }
 
