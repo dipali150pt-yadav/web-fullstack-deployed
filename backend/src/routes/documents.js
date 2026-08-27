@@ -6,7 +6,7 @@ import { createRequire } from "module";
 import { v4 as uuidv4 } from "uuid";
 import { DATA_DIR } from "../config.js";
 import { chunkAndIndexDocument, clearProductDocuments } from "../vectorStore.js";
-import { getDb } from "../db.js";
+import { saveDocumentRecord, allAsync } from "../db.js";
 
 const require = createRequire(import.meta.url);
 const pdfModule = require("pdf-parse");
@@ -71,6 +71,23 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const indexed = chunkAndIndexDocument(productId, file.originalname, extractedText, hardwareVersion);
     const chunksCount = Array.isArray(indexed) ? indexed.length : 1;
 
+    // NEW: persist to Turso so it survives redeploys/restarts
+    try {
+      await saveDocumentRecord({
+        id: uuidv4(),
+        productId,
+        productName: productName || productId,
+        filename: file.originalname,
+        content: extractedText,
+        hardwareVersion,
+        totalChunks: chunksCount,
+      });
+      console.log(`[Documents] Persisted '${file.originalname}' to Turso (${chunksCount} chunks).`);
+    } catch (dbErr) {
+      // Don't fail the whole upload if persistence fails — the in-memory index still works for this session
+      console.error("[Documents] Failed to persist document to Turso:", dbErr.message);
+    }
+
     return res.json({
       success: true,
       message: `Document '${file.originalname}' successfully indexed on the go!`,
@@ -88,14 +105,10 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const db = getDb();
-    db.all(
-      `SELECT d.*, p.name as product_name FROM documents d LEFT JOIN products p ON d.product_id = p.id ORDER BY d.created_at DESC`,
-      (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        return res.json({ documents: rows || [] });
-      }
+    const rows = await allAsync(
+      `SELECT d.*, p.name as product_name FROM documents d LEFT JOIN products p ON d.product_id = p.id ORDER BY d.created_at DESC`
     );
+    return res.json({ documents: rows || [] });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

@@ -2,6 +2,7 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { DATA_DIR } from "./config.js";
+import { getAllDocuments } from "./db.js";
 
 const EMBEDDING_DIMENSIONS = 768;
 
@@ -226,6 +227,19 @@ export async function loadAndIndexAll() {
       { category: "warranty", question: "What is the hardware warranty period?", answer: "All hardware devices include a 1-year standard manufacturer limited warranty." },
     ];
     defaultFaqs.forEach(indexFaqItem);
+  }
+
+  // Reload previously uploaded product manuals from Turso (persists across restarts/redeploys)
+  try {
+    const docs = await getAllDocuments();
+    for (const doc of docs) {
+      if (doc.content) {
+        chunkAndIndexDocument(doc.product_id, doc.filename, doc.content, doc.hardware_version || "");
+      }
+    }
+    console.log(`[VectorStore] Reloaded ${docs.length} document(s) from Turso on boot.`);
+  } catch (err) {
+    console.error("[VectorStore] Failed to reload documents from Turso:", err.message);
   }
 
   console.log(`Node Vector Store ready: ${productDocuments.length} product chunks, ${faqDocuments.length} FAQs indexed.`);
