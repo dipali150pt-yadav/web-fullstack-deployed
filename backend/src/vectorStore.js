@@ -442,7 +442,7 @@ export function isOverviewQuery(text) {
   const q = normalizeTypos(text).toLowerCase().trim();
   const cleanQ = q.replace(/\.[a-z0-9]{2,4}\b/g, "").replace(/[^a-z0-9\s]/g, " ").trim();
 
-  if (/\b(summarize|summarise|summary|overview|describe|description|brief|introduction|highlights|specifications|specs|features)\b/i.test(cleanQ)) {
+  if (/\b(summarize|summarise|summary|overview|describe|description|brief|introduction|highlights)\b/i.test(cleanQ)) {
     return true;
   }
   if (/\btell\s+me\s+(more|moe|about|everything|details)\b/i.test(cleanQ)) {
