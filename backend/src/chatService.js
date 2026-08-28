@@ -100,7 +100,13 @@ export async function processChat({
       topK: 8,
     });
 
-    if (docChunks.length > 0 && docChunks[0].score >= 0.12) {
+    console.log(`[DEBUG] docChunks.length = ${docChunks.length}`);
+    if (docChunks.length > 0) {
+      console.log(`[DEBUG] Top 3 chunk scores = ${docChunks.slice(0, 3).map(c => c.score.toFixed(3)).join(", ")}`);
+    }
+    console.log(`[DEBUG] GROK_API_KEY present: ${!!GROK_API_KEY}, prefix: ${GROK_API_KEY?.slice(0, 4)}`);
+
+    if (docChunks.length > 0 && docChunks[0].score >= 0.05) {
       let rawAnswer = "";
 
       // Call Groq LLM API with retrieved context
@@ -127,12 +133,14 @@ GUIDELINES:
 4. If the question cannot be answered from the provided excerpts, reply strictly with: "This information is not available in the uploaded document."
 5. Keep points crisp, up-to-the-mark, and easy to read. Do NOT write long paragraphs.`;
 
+
           const context = buildProductContext({ chunks: docChunks.slice(0, 6) });
           rawAnswer = await generateGroundedAnswer({
             systemInstruction: strictPrompt,
             context,
             question,
           });
+          console.log(`[DEBUG] rawAnswer = ${rawAnswer ? rawAnswer.slice(0, 300) : "NULL/EMPTY"}`);
         } catch (err) {
           console.warn(`[ChatService] Grounded LLM error: ${err.message}`);
         }
